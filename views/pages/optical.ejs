@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Optical - DotCompanion</title>
+  <link rel="stylesheet" href="/styles/style.css" type="text/css" />
+  <link rel="stylesheet" href="/styles/nav.css" type="text/css" />
+  <script src="https://kit.fontawesome.com/43c1b0f304.js" crossorigin="anonymous"></script>
+  <style>
+    /* CSS for Sticky Footer */
+    html, body {
+      height: 100%;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* Main content container */
+    .main-container {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      justify-content: center; /* Center vertically */
+      align-items: center; /* Center horizontally */
+    }
+
+    /* Center-align OCR heading and style file input and upload button */
+    .center-content {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      text-align: center;
+      margin-top: 20px; /* Adjust the margin as needed */
+    }
+
+    /* Style the "Choose File" and "Upload" buttons */
+    input[type="file"] {
+      display: none; /* Hide the default file input */
+    }
+
+    label.buttonPrimary {
+      background-color: var(--primaryDark);
+      color: var(--white);
+      font-size: 16px;
+      padding: 1px 10px;
+      border-radius: 3.5px;
+      cursor: pointer;
+      border: none;
+      outline: none;
+      transition: 200ms ease-in-out;
+      margin-top: 20px; /* Adjust the margin as needed */
+      display: inline-block;
+    }
+
+    label.buttonPrimary:hover {
+      background-color: var(--primary);
+      transition: 200ms ease-in-out;
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <%# Import nav %>
+    <%- include('../partials/nav') %>
+  </header>
+  <div class="main-container">
+    <main>
+      <!-- Center-align OCR heading and style file input and upload button -->
+      	<%# Absolute SVGs that are displayed on page %>
+				<img src="/media/topItem.svg" class="topItemLarge" />
+				<img src="/media/ellipse.svg" class="ellipse" />
+
+      <div class="center-content">
+        <h1>Optical Character Recognition</h1>
+        <form
+          id="frmUploader"
+          enctype="multipart/form-data"
+          action="/upload"
+          method="post"
+        >
+          <label for="fileInput" class="buttonPrimary">
+            Choose File
+            <input type="file" name="image" id="fileInput" multiple />
+          </label>
+          <input type="submit" name="submit" id="btnSubmit" value="Upload" class="buttonPrimary" />
+        </form>
+      </div>
+    </main>
+  </div>
+  <footer>
+    <%# Import footer %>
+    <%- include('../partials/footer') %>
+  </footer>
+</body>
+</html>

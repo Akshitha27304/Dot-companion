@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Translator</title>
+  <link rel="stylesheet" href="/styles/style.css" type="text/css" />
+  <link rel="stylesheet" href="/styles/nav.css" type="text/css" />
+  <script src="https://kit.fontawesome.com/43c1b0f304.js" crossorigin="anonymous"></script>
+</head>
+  <body>
+  <%# Import nav %>
+  <header>
+    <%- include('../partials/nav') %>
+  </header>
+    <h1>Welcome to the translator!</h1>
+
+    <button onclick="startTranslation()">Start Translation</button>
+
+    <div id="language-selection">
+        <label for="language-search">Search for a language:</label>
+        <input type="text" id="language-search" oninput="filterLanguages()">
+
+        <select id="language-list" size="10" style="width: 200px;" onchange="updateSelectedLanguage()">
+            <!-- Populate this with the list of languages dynamically -->
+        </select>
+    </div>
+
+    <div id="translation-container"></div>
+
+    <script>
+        async function startTranslation() {
+            const query = await takeVoiceInput();
+
+            if (query.toLowerCase() === 'stop') {
+                alert("Translation stopped. Exiting.");
+                return;
+            }
+
+            const fromLang = 'en';  // Source language is always English in this example
+            const toLang = await chooseDestinationLanguage();
+
+            // Perform translation using Microsoft Translator API (replace YOUR_SUBSCRIPTION_KEY with your actual key)
+            const subscriptionKey = 'YOUR_SUBSCRIPTION_KEY';
+            const endpoint = 'https://api.cognitive.microsofttranslator.com/translate';
+            const url = `${endpoint}?api-version=3.0&from=${fromLang}&to=${toLang}`;
+
+            try {
+                const response = await fetch(url, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Ocp-Apim-Subscription-Key': subscriptionKey,
+                    },
+                    body: JSON.stringify([{ text: query }]),
+                });
+
+                const result = await response.json();
+                const translatedText = result[0].translations[0].text;
+
+                displayTranslation(`Your sentence in English is translated to ${toLang}: ${translatedText}`);
+            } catch (error) {
+                console.error(error);
+                alert("Error occurred. Please try again.");
+            }
+        }
+
+        async function takeVoiceInput() {
+            return new Promise((resolve, reject) => {
+                const recognition = new webkitSpeechRecognition();
+                recognition.lang = 'en-US';
+
+                recognition.onresult = (event) => {
+                    const transcript = event.results[0][0].transcript;
+                    console.log(`User said: ${transcript}`);
+                    resolve(transcript.toLowerCase());
+                };
+
+                recognition.onerror = (event) => {
+                    console.error("Speech recognition error:", event.error);
+                    reject(event.error);
+                };
+
+                recognition.start();
+            });
+        }
+
+        async function chooseDestinationLanguage() {
+            const languageList = document.getElementById('language-list');
+            const selectedLanguage = prompt("Enter the language code you want to translate to (e.g., hi for Hindi):");
+
+            if (selectedLanguage && Array.from(languageList.options).some(opt => opt.value === selectedLanguage.toLowerCase())) {
+                return selectedLanguage.toLowerCase();
+            } else {
+                alert("Invalid language code. Please try again.");
+                return chooseDestinationLanguage();
+            }
+        }
+
+        function filterLanguages() {
+            const searchInput = document.getElementById('language-search').value.toLowerCase();
+            const languageList = document.getElementById('language-list');
+
+            for (let i = 0; i < languageList.options.length; i++) {
+                const option = languageList.options[i];
+                const languageName = option.text.toLowerCase();
+
+                if (languageName.includes(searchInput)) {
+                    option.style.display = 'block';
+                } else {
+                    option.style.display = 'none';
+                }
+            }
+        }
+
+        function updateSelectedLanguage() {
+            const selectedLanguage = document.getElementById('language-list').value;
+            alert(`Selected language: ${selectedLanguage}`);
+        }
+
+        function displayTranslation(text) {
+            const translationContainer = document.getElementById('translation-container');
+            translationContainer.innerText = text;
+            alert(text);
+        }
+
+        // Dummy list of languages for demonstration purposes
+        const languages = [
+            { code: 'hi', name: 'Hindi' },
+            { code: 'es', name: 'Spanish' },
+            { code: 'fr', name: 'French' },
+            // Add more languages as needed
+        ];
+
+        // Populate the language list
+        const languageList = document.getElementById('language-list');
+        languages.forEach(language => {
+            const option = document.createElement('option');
+            option.value = language.code;
+            option.text = language.name;
+            languageList.appendChild(option);
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Braille Editor - DotCompanion</title>
+    <link rel="stylesheet" href="/styles/style.css" type="text/css" />
+    <link rel="stylesheet" href="/styles/nav.css" type="text/css" />
+    <script src="https://kit.fontawesome.com/43c1b0f304.js" crossOrigin="anonymous"></script>
+
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+        }
+
+        /* Styles for the Text to Braille Converter */
+        .converter-container {
+            text-align: center;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            height: 100vh; /* Center vertically */
+        }
+
+        .buttonPrimary {
+            background-color: var(--primaryDark);
+            color: var(--white);
+            font-size: 16px;
+            padding: 8px 20px;
+            border-radius: 3.5px;
+            cursor: pointer;
+            border: none;
+            outline: none;
+            transition: 200ms ease-in-out;
+        }
+
+        .input-container {
+            margin: 20px;
+        }
+
+        label {
+            font-weight: bold;
+        }
+
+        input {
+            padding: 5px;
+            margin-right: 10px;
+        }
+
+        /* Style for the button group */
+        .button-group {
+            display: flex;
+            gap: 10px; /* Adjust the gap as needed */
+        }
+
+        /* Style for the individual buttons in the group */
+        .button-group .buttonPrimary {
+            padding: 5px 10px;
+        }
+
+        .braille-output {
+            margin-top: 20px;
+            font-size: 36px; /* Increase font size for larger Braille dots */
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <%# Import nav %>
+        <%- include('../partials/nav') %>
+    </header>
+
+    <main class="converter-container">
+        <!-- Absolute SVGs that are displayed on the page -->
+        <img src="/media/topItem.svg" class="topItemLarge" />
+        <img src="/media/ellipse.svg" class="ellipse" />
+
+        <h1>Text to Braille Converter</h1>
+        <div class="input-container">
+            <label for="text-input">Enter text:</label>
+            <input type="text" id="text-input" placeholder="Enter text">
+            <button id="convert-button" class="buttonPrimary">Convert</button>
+        </div>
+        <div class="braille-output" id="braille-output"></div>
+
+        <!-- Button group for "Copy" and "Share" buttons -->
+        <div class="button-group">
+            <button id="copy-button" class="buttonPrimary">Copy</button>
+            <button id="share-button" class="buttonPrimary">Share</button>
+        </div>
+    </main>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const textInput = document.getElementById('text-input');
+            const convertButton = document.getElementById('convert-button');
+            const brailleOutput = document.getElementById('braille-output');
+            const copyButton = document.getElementById('copy-button');
+            const shareButton = document.getElementById('share-button');
+
+            convertButton.addEventListener('click', function () {
+                const text = textInput.value;
+                const brailleText = convertToBraille(text);
+                brailleOutput.textContent = brailleText;
+            });
+
+            copyButton.addEventListener('click', function () {
+                const brailleText = brailleOutput.textContent;
+                const textarea = document.createElement('textarea');
+                textarea.value = brailleText;
+                document.body.appendChild(textarea);
+                textarea.select();
+                document.execCommand('copy');
+                document.body.removeChild(textarea);
+                alert('Braille text copied to clipboard.');
+            });
+
+            shareButton.addEventListener('click', function () {
+                const brailleText = brailleOutput.textContent;
+
+                if (navigator.share) {
+                    navigator.share({
+                        title: 'Shared Braille Text',
+                        text: brailleText,
+                    }).then(() => {
+                        console.log('Braille text shared successfully.');
+                    }).catch((error) => {
+                        console.error('Error sharing Braille text:', error);
+                    });
+                } else {
+                    alert('Sharing is not supported in this browser.');
+                }
+            });
+
+            function convertToBraille(text) {
+                const brailleMap = {
+                    'a': '⠁', 'b': '⠃', 'c': '⠉', 'd': '⠙', 'e': '⠑',
+                    'f': '⠋', 'g': '⠛', 'h': '⠓', 'i': '⠊', 'j': '⠚',
+                    'k': '⠅', 'l': '⠇', 'm': '⠍', 'n': '⠝', 'o': '⠕',
+                    'p': '⠏', 'q': '⠟', 'r': '⠗', 's': '⠎', 't': '⠞',
+                    'u': '⠥', 'v': '⠧', 'w': '⠺', 'x': '⠭', 'y': '⠽', 'z': '⠵',
+                    'A': '⠁', 'B': '⠃', 'C': '⠉', 'D': '⠙', 'E': '⠑',
+                    'F': '⠋', 'G': '⠛', 'H': '⠓', 'I': '⠊', 'J': '⠚',
+                    'K': '⠅', 'L': '⠇', 'M': '⠍', 'N': '⠝', 'O': '⠕',
+                    'P': '⠏', 'Q': '⠟', 'R': '⠗', 'S': '⠎', 'T': '⠞',
+                    'U': '⠥', 'V': '⠧', 'W': '⠺', 'X': '⠭', 'Y': '⠽', 'Z': '⠵',
+                    ' ': ' ',
+                };
+
+                return text.split('').map(char => {
+                    if (brailleMap[char]) {
+                        return brailleMap[char];
+                    } else {
+                        return char;
+                    }
+                }).join('');
+            }
+        });
+    </script>
+          <%# Import footer %>
+		<footer>
+			<%- include('../partials/footer') %>
+		</footer>
+</body>
+</html>
