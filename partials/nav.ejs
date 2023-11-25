@@ -1,0 +1,33 @@
+<nav>
+	<span class="navWrap">
+	<%# Logo %>
+		<%# Hamburger Menu %>
+		<button onclick="toggleNavLinks()" class="hamburger">
+			<svg viewBox="0 0 100 80" width="24" height="24" fill="#FFFFFF">
+		  	<rect width="100" height="11"></rect>
+		  	<rect y="30" width="100" height="11"></rect>
+		  	<rect y="60" width="100" height="11"></rect>
+			</svg>
+		</button>
+	</span>
+	<%# Nav links %>
+	<span class="navLinksWrap">
+		<ul id="navLinks">
+			<li><a href="/">Home</a></li>
+      <li><a href="/ttslearning">Text to Speech </a></li>
+      <li><a href="/Brailleedit"> Text to Braille</a></li>
+
+      <li><a href="/braille">Braille to Text</a></li>
+      <li><a href="/optical"> OCR </a></li>
+      
+		</ul>
+	</span>
+</nav>
+
+<script>
+	// Check if the display of the nav links, and switch to either display: none; or display: block; depending on what the current display value is
+	const toggleNavLinks = () => {
+		let x = document.getElementById('navLinks');
+		(x.style.display === 'none') ? x.style.display = 'block' : x.style.display = 'none';
+	}
+</script>
